@@ -1,0 +1,532 @@
+import React, { useMemo, useState, useEffect, useRef } from "react";
+
+// Interactive study page for Morgan Stanley Data Center Technician interview
+// Tailwind is available by default. Single-file component, no external deps.
+
+export default function DataCenterInterviewGuide() {
+  const [dark, setDark] = useState(true);
+  const [query, setQuery] = useState("");
+  const [expanded, setExpanded] = useState({});
+  const [showENOnly, setShowENOnly] = useState(false);
+  const [flashIdx, setFlashIdx] = useState(0);
+  const [flashSide, setFlashSide] = useState("Q");
+  const pageRef = useRef(null);
+
+  const data = useMemo(() => buildData(), []);
+  const allItems = useMemo(() => flattenForSearch(data), [data]);
+
+  // Build searchable set
+  const results = useMemo(() => {
+    if (!query.trim()) return allItems;
+    const q = query.toLowerCase();
+    return allItems.filter((it) => (it.search || "").includes(q));
+  }, [query, allItems]);
+
+  // Flashcards (use English Qs only)
+  const flashcards = useMemo(() => buildFlashcards(data), [data]);
+  useEffect(() => {
+    setFlashIdx(Math.floor(Math.random() * flashcards.length));
+  }, [flashcards.length]);
+
+  useEffect(() => {
+    if (dark) document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
+  }, [dark]);
+
+  const toggleAll = (open) => {
+    const next = {};
+    data.sections.forEach((s) => (next[s.id] = open));
+    setExpanded(next);
+  };
+
+  const copyText = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast("Copied to clipboard ✓");
+    } catch (e) {
+      toast("Copy failed. Please try again.");
+    }
+  };
+
+  const toast = (msg) => {
+    const el = document.createElement("div");
+    el.textContent = msg;
+    el.className =
+      "fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-3 py-2 rounded-xl shadow bg-black/80 text-white text-sm";
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1400);
+  };
+
+  const filteredSections = useMemo(() => {
+    if (!query.trim()) return data.sections;
+    const ids = new Set(results.map((r) => r.sectionId));
+    return data.sections.filter((s) => ids.has(s.id));
+  }, [data.sections, results, query]);
+
+  return (
+    <div ref={pageRef} className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100">
+      <header className="sticky top-0 z-30 backdrop-blur bg-white/70 dark:bg-slate-900/70 border-b border-slate-200/50 dark:border-slate-700">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
+          <h1 className="text-xl md:text-2xl font-semibold">Data Center Technician 面试互动学习页</h1>
+          <span className="ml-auto" />
+          <button
+            onClick={() => setDark((d) => !d)}
+            className="px-3 py-1.5 rounded-xl text-sm border dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
+            title="Toggle dark mode"
+          >
+            {dark ? "🌙" : "☀️"}
+          </button>
+          <button
+            onClick={() => window.print()}
+            className="px-3 py-1.5 rounded-xl text-sm border dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
+            title="Print / Save as PDF"
+          >
+            🖨️ Print
+          </button>
+        </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto p-4 grid md:grid-cols-[250px,1fr] gap-6">
+        {/* Sidebar */}
+        <aside className="hidden md:block">
+          <div className="sticky top-20 space-y-3">
+            <div className="p-3 rounded-2xl border dark:border-slate-700">
+              <div className="text-sm font-medium mb-2">工具箱</div>
+              <div className="flex flex-col gap-2">
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="搜索关键词 / Search..."
+                  className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border dark:border-slate-700 text-sm"
+                />
+                <label className="inline-flex items-center gap-2 text-sm">
+                  <input type="checkbox" checked={showENOnly} onChange={(e) => setShowENOnly(e.target.checked)} />
+                  只显示英文 / EN only
+                </label>
+                <div className="flex gap-2">
+                  <button onClick={() => toggleAll(true)} className="flex-1 px-3 py-1.5 rounded-xl text-sm border dark:border-slate-700">
+                    展开全部
+                  </button>
+                  <button onClick={() => toggleAll(false)} className="flex-1 px-3 py-1.5 rounded-xl text-sm border dark:border-slate-700">
+                    折叠全部
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Flashcards */}
+            <div className="p-3 rounded-2xl border dark:border-slate-700">
+              <div className="text-sm font-medium mb-2">Flashcards 速记卡</div>
+              <div className="text-sm leading-relaxed">
+                <div className="font-semibold mb-1">{flashSide === "Q" ? "Question" : "Answer"}</div>
+                <div className="mb-3">{flashSide === "Q" ? flashcards[flashIdx]?.q : flashcards[flashIdx]?.a}</div>
+                <div className="flex gap-2">
+                  <button onClick={() => setFlashSide((s) => (s === "Q" ? "A" : "Q"))} className="flex-1 px-3 py-1.5 rounded-xl text-sm border dark:border-slate-700">
+                    翻面
+                  </button>
+                  <button
+                    onClick={() => {
+                      setFlashIdx((i) => (i + 1) % flashcards.length);
+                      setFlashSide("Q");
+                    }}
+                    className="flex-1 px-3 py-1.5 rounded-xl text-sm border dark:border-slate-700"
+                  >
+                    下一张
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {/* Content */}
+        <section className="space-y-6">
+          {filteredSections.map((sec) => (
+            <article key={sec.id} className="rounded-2xl border dark:border-slate-700 overflow-hidden">
+              <header
+                onClick={() => setExpanded((ex) => ({ ...ex, [sec.id]: !ex[sec.id] }))}
+                className="cursor-pointer select-none px-4 py-3 bg-slate-100 dark:bg-slate-800/60 flex items-center gap-3"
+              >
+                <span className="text-lg font-semibold">{sec.title}</span>
+                <span className="ml-auto text-sm opacity-70">{expanded[sec.id] ? "点击折叠" : "点击展开"}</span>
+              </header>
+
+              {expanded[sec.id] !== false && (
+                <div className="p-4 space-y-4">
+                  {sec.blocks.map((blk, idx) => (
+                    <Block
+                      key={idx}
+                      block={blk}
+                      showENOnly={showENOnly}
+                      query={query}
+                      onCopy={copyText}
+                    />
+                  ))}
+                </div>
+              )}
+            </article>
+          ))}
+        </section>
+      </main>
+
+      <footer className="max-w-6xl mx-auto px-4 pb-12 pt-2 text-xs opacity-70">
+        Tips: 使用左侧搜索过滤内容；打印按钮可导出 PDF；切换 EN only 快速练口语。
+      </footer>
+    </div>
+  );
+}
+
+function Block({ block, showENOnly, query, onCopy }) {
+  const content = useMemo(() => highlight(block, query), [block, query]);
+  return (
+    <div className="rounded-xl border dark:border-slate-700">
+      <div className="px-4 py-3 flex items-start gap-3">
+        <div className="font-medium mt-0.5 shrink-0">{block.label}</div>
+        <div className="flex-1 space-y-2 text-sm leading-relaxed">
+          {block.items?.map((it, i) => (
+            <div key={i} className="">
+              <Line item={it} showENOnly={showENOnly} content={content[i]} />
+            </div>
+          ))}
+          {block.note && <div className="text-xs opacity-80">{block.note}</div>}
+        </div>
+        {block.copy && (
+          <button onClick={() => onCopy(block.copy)} className="ml-2 px-3 py-1.5 rounded-lg text-xs border dark:border-slate-700">
+            Copy
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Line({ item, showENOnly, content }) {
+  const en = content?.en || item.en || "";
+  const zh = content?.zh || item.zh || "";
+  return (
+    <div className="">
+      <div className="[&_mark]:bg-yellow-200/60 dark:[&_mark]:bg-yellow-400/40">
+        <div className="font-semibold">{renderHTML(en)}</div>
+        {!showENOnly && zh && <div className="opacity-80">{renderHTML(zh)}</div>}
+      </div>
+    </div>
+  );
+}
+
+function renderHTML(str) {
+  return <span dangerouslySetInnerHTML={{ __html: str }} />;
+}
+
+function highlight(block, query) {
+  const wrap = (s) =>
+    !query
+      ? s
+      : s.replace(new RegExp(`(${escapeRegExp(query)})`, "ig"), "<mark>$1</mark>");
+
+  const out = (block.items || []).map((it) => ({
+    en: wrap(it.en || ""),
+    zh: wrap(it.zh || ""),
+  }));
+  return out;
+}
+
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&");
+}
+
+function flattenForSearch(data) {
+  const arr = [];
+  for (const sec of data.sections) {
+    for (const blk of sec.blocks) {
+      for (const it of blk.items || []) {
+        const search = [it.en, it.zh].join(" ").toLowerCase();
+        arr.push({ sectionId: sec.id, search });
+      }
+    }
+  }
+  return arr;
+}
+
+function buildFlashcards(data) {
+  const cards = [];
+  const sec1 = data.sections.find((s) => s.id === "q" );
+  for (const blk of sec1.blocks) {
+    for (const it of blk.items) {
+      if (it.en.endsWith("?")) cards.push({ q: it.en, a: it.zh || "(面试自由发挥)" });
+    }
+  }
+  const sec3 = data.sections.find((s) => s.id === "answers");
+  for (const blk of sec3.blocks) {
+    for (const it of blk.items) {
+      cards.push({ q: it.en.split("→")[0] || "Example", a: it.zh || it.en });
+    }
+  }
+  return cards;
+}
+
+function buildData() {
+  return {
+    sections: [
+      {
+        id: "q",
+        title: "1) 常见面试问题 / Interview Questions",
+        blocks: [
+          {
+            label: "自我介绍 / Background",
+            items: [
+              { en: "Tell me about your background and experience in data centers.", zh: "请介绍你在数据中心的背景和经验。" },
+            ],
+          },
+          {
+            label: "技术经验 / Technical Experience",
+            items: [
+              { en: "What experience do you have with rack and stack?", zh: "你在上架设备方面有什么经验？" },
+              { en: "How do you handle fiber optic cables? What’s the difference between single-mode and multi-mode fiber?", zh: "你如何处理光纤？单模与多模的区别是什么？" },
+              { en: "Can you explain the difference between SFP, SFP+, and QSFP?", zh: "说明 SFP、SFP+、QSFP 的区别。" },
+              { en: "Describe your experience with ticketing systems like ServiceNow.", zh: "谈谈你使用 ServiceNow 等工单系统的经验。" },
+              { en: "Have you worked with Excel? Can you use pivot tables or formulas?", zh: "你熟悉 Excel 吗？会使用数据透视表或公式吗？" },
+            ],
+          },
+          {
+            label: "场景题 / Scenarios",
+            items: [
+              { en: "A server is not powering on after installation, how would you troubleshoot?", zh: "服务器上架后无法开机，你会如何排查？" },
+              { en: "You receive multiple urgent tickets at the same time, how do you prioritize?", zh: "同一时间有多个紧急工单，你如何排优先级？" },
+              { en: "If a cable is mislabeled, what steps do you take to fix it?", zh: "如果线缆标签错误，你如何纠正？" },
+            ],
+          },
+          {
+            label: "软技能 / Soft Skills",
+            items: [
+              { en: "Are you comfortable working night shifts and weekends?", zh: "你能接受晚班和周末班吗？" },
+              { en: "Can you lift heavy equipment (servers, UPS, etc.)?", zh: "你能搬动较重设备吗（服务器、UPS 等）？" },
+              { en: "Do you have leadership experience in a data center environment?", zh: "你在数据中心有带队或领导经验吗？" },
+            ],
+          },
+        ],
+      },
+      {
+        id: "tech",
+        title: "2) 技术知识要点 / Technical Essentials",
+        blocks: [
+          {
+            label: "Rack & Stack",
+            items: [
+              { en: "Install servers, switches, and storage into racks.", zh: "安装服务器、交换机、存储到机柜。" },
+              { en: "Mind airflow direction, power redundancy, and cable management.", zh: "注意气流方向、电源冗余、线缆管理。" },
+            ],
+          },
+          {
+            label: "Fiber & Copper",
+            items: [
+              { en: "SMF (single-mode): long distance, yellow jacket, laser.", zh: "单模：长距离，黄色护套，激光。" },
+              { en: "MMF (multi-mode): short distance, orange/aqua, LED.", zh: "多模：短距离，橙色/水蓝色，LED。" },
+              { en: "SFP: ~1 Gbps; SFP+: 10 Gbps; QSFP: 40/100 Gbps.", zh: "SFP：约1G；SFP+：10G；QSFP：40/100G。" },
+            ],
+          },
+          {
+            label: "Excel",
+            items: [
+              { en: "Functions: VLOOKUP, IF, SUM, COUNTIF.", zh: "常用函数：VLOOKUP、IF、SUM、COUNTIF。" },
+              { en: "Pivot Table for asset inventory.", zh: "用数据透视表管理资产清单。" },
+            ],
+          },
+          {
+            label: "Ticketing (ServiceNow)",
+            items: [
+              { en: "Open/assign/close tickets.", zh: "创建/分配/关闭工单。" },
+              { en: "Record installs, cabling, and deployments.", zh: "记录安装、布线、部署。" },
+            ],
+          },
+          {
+            label: "Troubleshooting",
+            items: [
+              { en: "Order: Power → Network → Config → Software.", zh: "顺序：电源 → 网络 → 配置 → 软件。" },
+              { en: "Check LEDs, cables, SFP compatibility.", zh: "检查指示灯、线缆、SFP 兼容性。" },
+            ],
+          },
+        ],
+      },
+      {
+        id: "answers",
+        title: "3) 英文回答示例 / Sample Answers",
+        blocks: [
+          {
+            label: "Experience",
+            items: [
+              { en: "I have over five years of experience working in data centers...", zh: "我有5年以上数据中心经验……（上架、布线、库存管理、ServiceNow、Excel）。" },
+            ],
+            copy: "I have over five years of experience working in data centers. My responsibilities included racking and stacking servers, running fiber and Ethernet cables, and managing equipment inventory. I also used ServiceNow for ticket management and Excel for tracking assets.",
+          },
+          {
+            label: "SMF vs MMF",
+            items: [
+              { en: "SMF is for long distance with laser (yellow); MMF is for shorter runs with LED (orange/aqua).", zh: "单模用于长距离（黄色，激光）；多模用于短距离（橙/水蓝，LED）。" },
+            ],
+            copy: "Single-mode fiber is designed for long-distance communication using a laser, usually with yellow jackets. Multi-mode fiber is used for shorter distances, typically inside data centers, and uses LED light, often with orange or aqua jackets.",
+          },
+          {
+            label: "No Power Troubleshoot",
+            items: [
+              { en: "Check PSUs, PDUs, then logs/iDRAC; escalate via ticket if needed.", zh: "检查 PSU/PDU，然后日志/iDRAC；必要时通过工单升级。" },
+            ],
+            copy: "First, I would check the power connections and ensure redundant power supplies are connected. Then I would verify if the PDU is providing power. If hardware seems fine, I would check logs or iDRAC/ILO for errors. If needed, I’d escalate through the ticketing system.",
+          },
+          {
+            label: "Night Shifts",
+            items: [
+              { en: "Yes, I’m used to evening and weekend shifts in 24/7 environments.", zh: "可以，我适应 24/7 环境的夜班与周末班。" },
+            ],
+            copy: "Yes, I understand this role requires evening and weekend shifts. I am flexible and used to working in a 24/7 environment.",
+          },
+        ],
+      },
+      {
+        id: "vocab",
+        title: "4) Rack & Stack 词汇表 / Vocabulary",
+        blocks: [
+          {
+            label: "机柜 & 附件",
+            items: [
+              { en: "Rack — equipment cabinet", zh: "Rack → 机柜" },
+              { en: "Rack Unit (U) — 1U = 1.75 inches", zh: "机柜高度单位 (1U=1.75英寸)" },
+              { en: "Rails — slide rails for mounting", zh: "导轨（金属滑轨）" },
+              { en: "Blanking/Filler Panel — airflow filler", zh: "挡板（填充空位、保证气流）" },
+              { en: "Cable Management Arm (CMA)", zh: "线缆管理臂" },
+              { en: "Rack Mount Kit — screws, brackets", zh: "上架套件（螺丝、导轨、支架）" },
+            ],
+          },
+          {
+            label: "电源相关",
+            items: [
+              { en: "PDU — Power Distribution Unit", zh: "电源分配单元" },
+              { en: "PSU — Power Supply Unit", zh: "电源模块" },
+              { en: "Power Cord", zh: "电源线" },
+              { en: "Redundant Power Supply", zh: "冗余电源" },
+            ],
+          },
+          {
+            label: "网络 & 线缆",
+            items: [
+              { en: "Patch Panel", zh: "配线架" },
+              { en: "Ethernet Cable (Cat5e/Cat6/Cat6a)", zh: "网线" },
+              { en: "Fiber Optic Cable (SM/MM)", zh: "光纤线（单模/多模）" },
+              { en: "SFP / SFP+ / QSFP — transceivers", zh: "光模块" },
+              { en: "Transceiver — optical module", zh: "收发器（SFP 模块）" },
+              { en: "Cable Label", zh: "线缆标签" },
+            ],
+          },
+          {
+            label: "安装相关",
+            items: [
+              { en: "Unboxing", zh: "开箱" },
+              { en: "Mounting Bracket", zh: "安装支架" },
+              { en: "Thumbscrews / Cage Nuts", zh: "手拧螺丝 / 笼式螺母" },
+              { en: "Grounding", zh: "接地" },
+            ],
+          },
+          {
+            label: "散热 & 环境",
+            items: [
+              { en: "Airflow", zh: "气流" },
+              { en: "Hot Aisle / Cold Aisle", zh: "热通道 / 冷通道" },
+              { en: "Cooling Fan", zh: "风扇" },
+              { en: "Temperature Sensor", zh: "温度传感器" },
+            ],
+          },
+        ],
+      },
+      {
+        id: "dialogue",
+        title: "5) 上架对话模拟 / Dialogue Simulation",
+        blocks: [
+          {
+            label: "Conversation",
+            items: [
+              { en: "Supervisor: Hey, we need to rack and stack this new Dell server in Rack 12. Can you take care of it?", zh: "主管：要把新Dell服务器上到12号机柜，你来负责吗？" },
+              { en: "You: Sure. I’ll start by unboxing the server and checking the rail kit.", zh: "你：好的。我先开箱并检查导轨套件。" },
+              { en: "Supervisor: Make sure you install the rails properly. Need any help?", zh: "主管：导轨要装好，需要帮忙吗？" },
+              { en: "You: I’ll mount the rails, slide the server into place, and secure it with cage nuts and screws.", zh: "你：我会装好导轨，把服务器推入并用螺丝固定。" },
+              { en: "Supervisor: Don’t forget about power and network connections.", zh: "主管：别忘了电源和网络连接。" },
+              { en: "You: I’ll connect redundant PSUs to separate PDUs, then Ethernet and fiber. I’ll label all cables.", zh: "你：我会把冗余电源接到不同PDU，再接网线和光纤，并贴好标签。" },
+              { en: "Supervisor: How about airflow management?", zh: "主管：气流管理呢？" },
+              { en: "You: I’ll install blanking panels and ensure the CMA doesn’t block airflow.", zh: "你：我会装挡板并确保理线臂不阻挡气流。" },
+              { en: "Supervisor: Once it’s powered on, log a ticket in ServiceNow.", zh: "主管：开机后在ServiceNow里记录。" },
+              { en: "You: Will do. I’ll test power, check iDRAC, and update the ticket.", zh: "你：收到。我会测试电源，检查iDRAC，并更新工单。" },
+            ],
+          },
+        ],
+      },
+      {
+        id: "checklist",
+        title: "6) Rack & Stack Checklist / 操作清单",
+        blocks: [
+          {
+            label: "Step 1: Preparation",
+            items: [
+              { en: "Verify rack location and U-space.", zh: "确认机柜位置与U高度。" },
+              { en: "Unbox and check rail kit, power cords, accessories.", zh: "开箱并检查导轨、电源线、配件。" },
+              { en: "Ensure ESD protection.", zh: "做好静电防护。" },
+            ],
+          },
+          {
+            label: "Step 2: Install Rails",
+            items: [
+              { en: "Mount rail kit securely.", zh: "牢固安装导轨。" },
+              { en: "Ensure level & alignment.", zh: "确保水平与对齐。" },
+            ],
+          },
+          {
+            label: "Step 3: Rack the Server",
+            items: [
+              { en: "Slide server into rails carefully.", zh: "小心推入服务器。" },
+              { en: "Secure with cage nuts and thumbscrews.", zh: "用笼式螺母和手拧螺丝固定。" },
+            ],
+          },
+          {
+            label: "Step 4: Connect Power",
+            items: [
+              { en: "Connect redundant PSUs to separate PDUs.", zh: "冗余电源接入不同PDU。" },
+              { en: "Verify power cords are firm.", zh: "确认电源线牢固。" },
+            ],
+          },
+          {
+            label: "Step 5: Network & Fiber",
+            items: [
+              { en: "Connect Ethernet and fiber per diagram.", zh: "按拓扑图接网线与光纤。" },
+              { en: "Label both cable ends.", zh: "线缆两端贴标签。" },
+              { en: "Route via cable management arm.", zh: "走线放入理线臂。" },
+            ],
+          },
+          {
+            label: "Step 6: Airflow & Blanking",
+            items: [
+              { en: "Install blanking panels in unused spaces.", zh: "空位安装挡板。" },
+              { en: "Ensure cables don’t block fans.", zh: "确保线缆不挡风。" },
+            ],
+          },
+          {
+            label: "Step 7: Power On & Test",
+            items: [
+              { en: "Power on and check LEDs.", zh: "开机并看指示灯。" },
+              { en: "Check iDRAC/iLO for health.", zh: "用 iDRAC/iLO 查硬件健康。" },
+            ],
+          },
+          {
+            label: "Step 8: Documentation",
+            items: [
+              { en: "Update asset inventory in Excel.", zh: "在Excel更新资产。" },
+              { en: "Update/close ServiceNow ticket.", zh: "更新/关闭工单。" },
+            ],
+          },
+          {
+            label: "Summary (one-liner)",
+            items: [
+              { en: "My rack & stack process: prep → rails → mount → power & network → airflow → power-on → docs.", zh: "流程：准备→导轨→上架→电源/网络→气流→开机→文档。" },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+}
