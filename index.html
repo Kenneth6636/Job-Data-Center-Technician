@@ -1,191 +1,141 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Data Center Interview Guide 中英文对照</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Data Center Interview Guide — 中英文上下对照（原文未改）</title>
   <style>
-    body { font-family: Arial, sans-serif; line-height: 1.8; background: #f9f9f9; padding: 20px; }
-    h1 { text-align: center; color: #0073e6; }
-    details { margin: 12px 0; padding: 12px; background: #fff; border: 1px solid #ddd; border-radius: 6px; white-space: pre-line; word-wrap: break-word; }
-    summary { font-weight: bold; cursor: pointer; }
-    .section p { margin: 6px 0; }
-    button { margin: 8px 4px; padding: 6px 10px; background: #0073e6; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
-    button:hover { background: #005bb5; }
+    :root{
+      --bg:#f8fafc;
+      --card:#fff;
+      --accent:#0369a1;
+      --muted:#475569;
+    }
+    body{
+      margin:0;
+      background:var(--bg);
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      color:#0f172a;
+      padding:18px;
+    }
+    .wrap{
+      max-width:980px;
+      margin:0 auto;
+    }
+    header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    h1{margin:0;font-size:1.4rem;color:var(--accent)}
+    p.lead{margin:0;color:var(--muted)}
+    details{
+      background:var(--card);
+      border:1px solid #e6eef6;
+      padding:12px;
+      margin-top:12px;
+      border-radius:8px;
+      white-space:pre-wrap; /* 保留换行并自动换行 */
+      word-break:break-word;
+    }
+    summary{
+      font-weight:700;
+      cursor:pointer;
+      outline:none;
+      padding:6px 0;
+      display:list-item;
+      list-style:none;
+    }
+    .controls{margin-top:8px}
+    button{
+      background:var(--accent);
+      color:#fff;
+      border:0;
+      padding:8px 10px;
+      border-radius:8px;
+      cursor:pointer;
+      margin-right:8px;
+    }
+    button.ghost{background:#fff;border:1px solid #cbd5e1;color:var(--muted)}
+    pre.content{
+      background:#fbfeff;
+      border:1px solid #eef6fb;
+      padding:12px;
+      border-radius:6px;
+      margin-top:8px;
+      font-family:inherit;
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+    .hint{font-size:0.9rem;color:var(--muted);margin-top:10px}
   </style>
   <script>
-    function copyContent(id) {
-      const text = document.getElementById(id).innerText;
-      navigator.clipboard.writeText(text).then(() => { alert('已复制到剪贴板'); });
+    function copyId(id){
+      const t = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(t).then(()=>{ alert('已复制到剪贴板'); });
     }
-    function printContent() { window.print(); }
+    function printPage(){ window.print(); }
   </script>
 </head>
 <body>
-  <h1>Data Center Interview Guide (中英文对照)</h1>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Data Center Interview Guide — 中英文上下对照（原文未改）</h1>
+        <p class="lead">页面支持折叠/展开、复制指定部分与打印。内容保持原文不改（上下对照）。</p>
+      </div>
+    </header>
 
-  <details open>
-    <summary>1. 常见面试问题 / Common Interview Questions</summary>
-    <div id="sec1" class="section">
-      <p>自我介绍</p>
-      <p>Tell me about your background and experience in data centers.</p>
-      <p>技术经验</p>
-      <p>What experience do you have with rack and stack? How do you handle fiber optic cables? What’s the difference between single-mode and multi-mode fiber? Can you explain the difference between SFP, SFP+, and QSFP? Describe your experience with ticketing systems like ServiceNow. Have you worked with Excel? Can you use pivot tables or formulas?</p>
-      <p>场景类问题</p>
-      <p>A server is not powering on after installation, how would you troubleshoot? You receive multiple urgent tickets at the same time, how do you prioritize? If a cable is mislabeled, what steps do you take to fix it?</p>
-      <p>软技能 / 团队</p>
-      <p>Are you comfortable working night shifts and weekends? Can you lift heavy equipment (servers, UPS, etc.)? Do you have leadership experience in a data center environment?</p>
+    <details open>
+      <summary>1</summary>
+      <pre id="part1" class="content">1. 常见面试问题（可能涉及） 自我介绍 Tell me about your background and experience in data centers. 技术经验 What experience do you have with rack and stack? How do you handle fiber optic cables? What’s the difference between single-mode and multi-mode fiber? Can you explain the difference between SFP, SFP+, and QSFP? Describe your experience with ticketing systems like ServiceNow. Have you worked with Excel? Can you use pivot tables or formulas? 场景类问题 A server is not powering on after installation, how would you troubleshoot? You receive multiple urgent tickets at the same time, how do you prioritize? If a cable is mislabeled, what steps do you take to fix it? 软技能 / 团队 Are you comfortable working night shifts and weekends? Can you lift heavy equipment (servers, UPS, etc.)? Do you have leadership experience in a data center environment?</pre>
+      <div class="controls">
+        <button onclick="copyId('part1')">复制 / Copy</button>
+      </div>
+    </details>
+
+    <details open>
+      <summary>2</summary>
+      <pre id="part2" class="content">2. 技术知识要点 ✅ Rack & Stack 安装服务器、交换机、存储设备到机柜 注意气流方向、电源冗余、线缆管理 ✅ 光纤 & 网线 Single-mode fiber (SMF) → 长距离，黄色，使用激光 Multi-mode fiber (MMF) → 短距离，橙色/水蓝色，使用 LED SFP (Small Form-factor Pluggable) → 支持 1Gbps SFP+ → 支持 10Gbps QSFP → 支持 40Gbps/100Gbps ✅ Excel 技能 常用函数：VLOOKUP / IF / SUM / COUNTIF 数据透视表（Pivot Table） 整理机房资产清单 ✅ Ticketing System (ServiceNow) 工单创建、分配、关闭 记录设备更换、布线、服务器部署等 ✅ 故障排查思路 电源 → 网络 → 配置 → 软件 检查硬件灯、线缆、SFP 模块兼容性 📌</pre>
+      <div class="controls">
+        <button onclick="copyId('part2')">复制 / Copy</button>
+      </div>
+    </details>
+
+    <details open>
+      <summary>3</summary>
+      <pre id="part3" class="content">3. 英文回答示例 Q: Tell me about your data center experience. 👉 “I have over five years of experience working in data centers. My responsibilities included racking and stacking servers, running fiber and Ethernet cables, and managing equipment inventory. I also used ServiceNow for ticket management and Excel for tracking assets.” Q: What’s the difference between single-mode and multi-mode fiber? 👉 “Single-mode fiber is designed for long-distance communication using a laser, usually with yellow jackets. Multi-mode fiber is used for shorter distances, typically inside data centers, and uses LED light, often with orange or aqua jackets.” Q: How do you troubleshoot a server that won’t power on? 👉 “First, I would check the power connections and ensure redundant power supplies are connected. Then I would verify if the PDU is providing power. If hardware seems fine, I would check logs or iDRAC/ILO for errors. If needed, I’d escalate through the ticketing system.” Q: Are you comfortable working night shifts? 👉 “Yes, I understand this role requires evening and weekend shifts. I am flexible and used to working in a 24/7 environment.”</pre>
+      <div class="controls">
+        <button onclick="copyId('part3')">复制 / Copy</button>
+      </div>
+    </details>
+
+    <details open>
+      <summary>4</summary>
+      <pre id="part4" class="content">4.Rack & Stack 常用单词汇总 🔹 机柜 & 附件 Rack → 机柜 Rack Unit (U) → 机柜高度单位（1U=1.75 英寸） Rails → 导轨（安装服务器用的金属滑轨） Blanking Panel / Filler Panel → 挡板（填充空位，保证气流） Cable Management Arm (CMA) → 线缆管理臂（服务器后方，方便走线） Rack Mount Kit → 上架套件（螺丝、导轨、支架） 🔹 电源相关 PDU (Power Distribution Unit) → 电源分配单元 PSU (Power Supply Unit) → 电源模块 Power Cord → 电源线 Redundant Power Supply → 冗余电源 🔹 网络 & 线缆 Patch Panel → 配线架 Ethernet Cable (Cat5e/Cat6/Cat6a) → 网线 Fiber Optic Cable (Single-mode / Multi-mode) → 光纤线 SFP / SFP+ / QSFP → 光模块 Transceiver → 收发器（SFP 模块） Cable Label → 线缆标签 🔹 服务器安装相关 Rack & Stack → 服务器机柜上架 Unboxing → 开箱 Mounting Bracket → 安装支架 Thumbscrews / Cage Nuts → 手拧螺丝 / 笼式螺母 Grounding → 接地 🔹 散热 & 环境 Airflow → 气流 Hot Aisle / Cold Aisle → 热通道 / 冷通道 Cooling Fan → 风扇 Temperature Sensor → 温度传感器 📌 举例一句话（面试可能会问）： “When racking and stacking a server, how do you ensure proper airflow?” 👉 你就可以答： “I always install blanking panels in unused rack spaces and make sure cables are properly managed to avoid blocking airflow.”</pre>
+      <div class="controls">
+        <button onclick="copyId('part4')">复制 / Copy</button>
+      </div>
+    </details>
+
+    <details open>
+      <summary>5</summary>
+      <pre id="part5" class="content">5.场景：主管让你把一台新服务器上架 Supervisor: “Hey, we need to rack and stack this new Dell server in Rack 12. Can you take care of it?” You: “Sure. I’ll start by unboxing the server and checking the rail kit.” Supervisor: “Good. Make sure you install the rails properly. Do you need any help?” You: “I think I’m good. I’ll mount the rails, slide the server into place, and secure it with cage nuts and screws.” Supervisor: “Don’t forget about power and network connections.” You: “Understood. I’ll connect both redundant PSUs to separate PDUs for power redundancy, and then connect the Ethernet and fiber cables. I’ll also label all the cables.” Supervisor: “Nice. How about airflow management?” You: “I’ll install blanking panels in empty rack spaces and make sure the cable management arm doesn’t block the airflow.” Supervisor: “Great. Once it’s powered on, log a ticket in ServiceNow to confirm installation.” You: “Will do. I’ll test the server power, check the iDRAC interface, and then update the ServiceNow ticket with the installation details.”</pre>
+      <div class="controls">
+        <button onclick="copyId('part5')">复制 / Copy</button>
+      </div>
+    </details>
+
+    <details open>
+      <summary>6</summary>
+      <pre id="part6" class="content">关键词汇回顾 Rail kit → 导轨套件 Cage nuts → 笼式螺母 Redundant PSUs → 冗余电源模块 PDUs → 电源分配单元 Blanking panels → 挡板 Cable management arm → 线缆管理臂 Label cables → 给线缆贴标签 ServiceNow ticket → 工单系统记录 
+      
+6.Rack & Stack Checklist (操作流程清单) 🔹 Step 1: Preparation – 准备工作 “Verify the rack location and check the rack space (U-size).” 确认机柜位置和高度（多少 U）。 “Unbox the server and check for rail kit, power cords, and accessories.” 开箱，检查导轨、电源线和配件。 “Ensure proper ESD protection before handling components.” 操作前做好静电防护。 🔹 Step 2: Install Rails – 安装导轨 “Mount the rail kit securely in the rack.” 把导轨牢固地装到机柜上。 “Make sure rails are level and aligned properly.” 确保导轨水平、对齐。 🔹 Step 3: Rack the Server – 上架服务器 “Slide the server into the rails carefully.” 小心地把服务器推入导轨。 “Secure the server with cage nuts and thumbscrews.” 用笼式螺母和手拧螺丝固定服务器。 🔹 Step 4: Connect Power – 接电源 “Connect redundant PSUs to separate PDUs for power redundancy.” 把冗余电源分别接到不同的 PDU。 “Verify that power cords are firmly connected.” 确认电源线连接牢固。 🔹 Step 5: Connect Network & Fiber – 接网络和光纤 “Connect Ethernet and fiber cables as per the diagram.” 按照拓扑图连接网线和光纤。 “Label both ends of the cables for easy identification.” 给线缆两端贴标签，方便识别。 “Route cables through the cable management arm.” 把线缆走线放入理线臂。 🔹 Step 6: Airflow & Blanking Panels – 散热与挡板 “Install blanking panels in unused rack spaces to maintain proper airflow.” 在空位安装挡板，保证气流。 “Check that cables do not block fans or airflow.” 确认线缆不会挡住风扇或气流。 🔹 Step 7: Power On & Test – 开机测试 “Power on the server and check LED indicators.” 开机，查看服务器指示灯。 “Access the iDRAC/iLO interface to confirm hardware health.” 通过 iDRAC/iLO 确认硬件状态。 🔹 Step 8: Documentation – 文档与工单 “Update the asset inventory in Excel.” 在 Excel 里更新资产信息。 “Close or update the ServiceNow ticket with installation details.” 在 ServiceNow 工单系统里更新安装信息并关闭工单。 📌 总结： 面试回答时，你可以说： 👉 “My rack and stack process includes preparation, rail installation, mounting the server, connecting redundant power and network cables, managing airflow with blanking panels, powering on, and finally updating documentation in ServiceNow.”</pre>
+      <div class="controls">
+        <button onclick="copyId('part6')">复制 / Copy</button>
+      </div>
+    </details>
+
+    <div class="hint">提示：点击任意“复制”按钮会把该部分原文（未修改）复制到剪贴板。点击浏览器的打印（或页面上的 Print）以打印此页。</div>
+    <div style="margin-top:12px">
+      <button onclick="printPage()">打印 / Print</button>
     </div>
-    <button onclick="copyContent('sec1')">复制 Copy</button>
-  </details>
-
-  <details open>
-    <summary>2. 技术知识要点 / Technical Knowledge</summary>
-    <div id="sec2" class="section">
-      <p>Rack & Stack 安装服务器、交换机、存储设备到机柜 注意气流方向、电源冗余、线缆管理</p>
-      <p>✅ Rack & Stack: Install servers, switches, storage into racks. Pay attention to airflow, power redundancy, and cable management.</p>
-      <p>光纤 & 网线</p>
-      <p>Single-mode fiber (SMF) → 长距离，黄色，使用激光</p>
-      <p>Single-mode fiber (SMF) → Long-distance, yellow jacket, uses laser</p>
-      <p>Multi-mode fiber (MMF) → 短距离，橙色/水蓝色，使用 LED</p>
-      <p>Multi-mode fiber (MMF) → Short-distance, orange/aqua jacket, uses LED</p>
-      <p>SFP (Small Form-factor Pluggable) → 支持 1Gbps</p>
-      <p>SFP (Small Form-factor Pluggable) → Supports 1Gbps</p>
-      <p>SFP+ → 支持 10Gbps</p>
-      <p>SFP+ → Supports 10Gbps</p>
-      <p>QSFP → 支持 40Gbps/100Gbps</p>
-      <p>QSFP → Supports 40Gbps/100Gbps</p>
-      <p>Excel 技能</p>
-      <p>常用函数：VLOOKUP / IF / SUM / COUNTIF</p>
-      <p>Pivot Table / 整理机房资产清单</p>
-      <p>Ticketing System (ServiceNow) 工单创建、分配、关闭 记录设备更换、布线、服务器部署等</p>
-      <p>Troubleshooting 思路: 电源 → 网络 → 配置 → 软件 检查硬件灯、线缆、SFP 模块兼容性</p>
-    </div>
-    <button onclick="copyContent('sec2')">复制 Copy</button>
-  </details>
-
-  <details open>
-    <summary>3. 英文回答示例 / Example Answers</summary>
-    <div id="sec3" class="section">
-      <p>Q: Tell me about your data center experience.</p>
-      <p>👉 “I have over five years of experience working in data centers. My responsibilities included racking and stacking servers, running fiber and Ethernet cables, and managing equipment inventory. I also used ServiceNow for ticket management and Excel for tracking assets.”</p>
-      <p>Q: What’s the difference between single-mode and multi-mode fiber?</p>
-      <p>👉 “Single-mode fiber is designed for long-distance communication using a laser, usually with yellow jackets. Multi-mode fiber is used for shorter distances, typically inside data centers, and uses LED light, often with orange or aqua jackets.”</p>
-      <p>Q: How do you troubleshoot a server that won’t power on?</p>
-      <p>👉 “First, I would check the power connections and ensure redundant power supplies are connected. Then I would verify if the PDU is providing power. If hardware seems fine, I would check logs or iDRAC/ILO for errors. If needed, I’d escalate through the ticketing system.”</p>
-      <p>Q: Are you comfortable working night shifts?</p>
-      <p>👉 “Yes, I understand this role requires evening and weekend shifts. I am flexible and used to working in a 24/7 environment.”</p>
-    </div>
-    <button onclick="copyContent('sec3')">复制 Copy</button>
-  </details>
-
-  <details open>
-    <summary>4. Rack & Stack 常用单词汇总 / Vocabulary</summary>
-    <div id="sec4" class="section">
-      <p>Rack → 机柜</p>
-      <p>Rack Unit (U) → 机柜高度单位（1U=1.75 英寸）</p>
-      <p>Rails → 导轨（安装服务器用的金属滑轨）</p>
-      <p>Blanking Panel / Filler Panel → 挡板（填充空位，保证气流）</p>
-      <p>Cable Management Arm (CMA) → 线缆管理臂（服务器后方，方便走线）</p>
-      <p>Rack Mount Kit → 上架套件（螺丝、导轨、支架）</p>
-      <p>电源相关 PDU / PSU / Power Cord / Redundant Power Supply</p>
-      <p>网络 & 线缆 Patch Panel / Ethernet Cable / Fiber Optic Cable / SFP / SFP+ / QSFP / Transceiver / Cable Label</p>
-      <p>服务器安装相关 Rack & Stack / Unboxing / Mounting Bracket / Thumbscrews / Cage Nuts / Grounding</p>
-      <p>散热 & 环境 Airflow / Hot Aisle / Cold Aisle / Cooling Fan / Temperature Sensor</p>
-      <p>举例: “When racking and stacking a server, how do you ensure proper airflow?”</p>
-      <p>👉 “I always install blanking panels in unused rack spaces and make sure cables are properly managed to avoid blocking airflow.”</p>
-    </div>
-    <button onclick="copyContent('sec4')">复制 Copy</button>
-  </details>
-
-  <details open>
-    <summary>5. 场景练习 / Scenario Practice</summary>
-    <div id="sec5" class="section">
-      <p>Supervisor: “Hey, we need to rack and stack this new Dell server in Rack 12. Can you take care of it?”</p>
-      <p>You: “Sure. I’ll start by unboxing the server and checking the rail kit.”</p>
-      <p>Supervisor: “Good. Make sure you install the rails properly. Do you need any help?”</p>
-      <p>You: “I think I’m good. I’ll mount the rails, slide the server into place, and secure it with cage nuts and screws.”</p>
-      <p>Supervisor: “Don’t forget about power and network connections.”</p>
-      <p>You: “Understood. I’ll connect both redundant PSUs to separate PDUs for power redundancy, and then connect the Ethernet and fiber cables. I’ll also label all the cables.”</p>
-      <p>Supervisor: “Nice. How about airflow management?”</p>
-      <p>You: “I’ll install blanking panels in empty rack spaces and make sure the cable management arm doesn’t block the airflow.”</p>
-      <p>Supervisor: “Great. Once it’s powered on, log a ticket in ServiceNow to confirm installation.”</p>
-      <p>You: “Will do. I’ll test the server power, check the iDRAC interface, and then update the ServiceNow ticket with the installation details.”</p>
-    </div>
-    <button onclick
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Data Center Interview Guide 中英文对照</title>
-  <style>
-    body { font-family: Arial, sans-serif; line-height: 1.8; background: #f9f9f9; padding: 20px; }
-    h1 { text-align: center; color: #0073e6; }
-    details { margin: 12px 0; padding: 12px; background: #fff; border: 1px solid #ddd; border-radius: 6px; white-space: pre-line; word-wrap: break-word; }
-    summary { font-weight: bold; cursor: pointer; }
-    .section p { margin: 6px 0; }
-    button { margin: 8px 4px; padding: 6px 10px; background: #0073e6; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
-    button:hover { background: #005bb5; }
-  </style>
-  <script>
-    function copyContent(id) {
-      const text = document.getElementById(id).innerText;
-      navigator.clipboard.writeText(text).then(() => { alert('已复制到剪贴板'); });
-    }
-    function printContent() { window.print(); }
-  </script>
-</head>
-<body>
-  <h1>Data Center Interview Guide (中英文对照)</h1>
-
-  <!-- 前五部分内容保持原样 -->
-
-  <details open>
-    <summary>6. Rack & Stack Checklist (操作流程清单)</summary>
-    <div id="sec6" class="section">
-      <p>Step 1: Preparation – 准备工作</p>
-      <p>"Verify the rack location and check the rack space (U-size)." 确认机柜位置和高度（多少 U）。</p>
-      <p>"Unbox the server and check for rail kit, power cords, and accessories." 开箱，检查导轨、电源线和配件。</p>
-      <p>"Ensure proper ESD protection before handling components." 操作前做好静电防护。</p>
-
-      <p>Step 2: Install Rails – 安装导轨</p>
-      <p>"Mount the rail kit securely in the rack." 把导轨牢固地装到机柜上。</p>
-      <p>"Make sure rails are level and aligned properly." 确保导轨水平、对齐。</p>
-
-      <p>Step 3: Rack the Server – 上架服务器</p>
-      <p>"Slide the server into the rails carefully." 小心地把服务器推入导轨。</p>
-      <p>"Secure the server with cage nuts and thumbscrews." 用笼式螺母和手拧螺丝固定服务器。</p>
-
-      <p>Step 4: Connect Power – 接电源</p>
-      <p>"Connect redundant PSUs to separate PDUs for power redundancy." 把冗余电源分别接到不同的 PDU。</p>
-      <p>"Verify that power cords are firmly connected." 确认电源线连接牢固。</p>
-
-      <p>Step 5: Connect Network & Fiber – 接网络和光纤</p>
-      <p>"Connect Ethernet and fiber cables as per the diagram." 按照拓扑图连接网线和光纤。</p>
-      <p>"Label both ends of the cables for easy identification." 给线缆两端贴标签，方便识别。</p>
-      <p>"Route cables through the cable management arm." 把线缆走线放入理线臂。</p>
-
-      <p>Step 6: Airflow & Blanking Panels – 散热与挡板</p>
-      <p>"Install blanking panels in unused rack spaces to maintain proper airflow." 在空位安装挡板，保证气流。</p>
-      <p>"Check that cables do not block fans or airflow." 确认线缆不会挡住风扇或气流。</p>
-
-      <p>Step 7: Power On & Test – 开机测试</p>
-      <p>"Power on the server and check LED indicators." 开机，查看服务器指示灯。</p>
-      <p>"Access the iDRAC/iLO interface to confirm hardware health." 通过 iDRAC/iLO 确认硬件状态。</p>
-
-      <p>Step 8: Documentation – 文档与工单</p>
-      <p>"Update the asset inventory in Excel." 在 Excel 里更新资产信息。</p>
-      <p>"Close or update the ServiceNow ticket with installation details." 在 ServiceNow 工单系统里更新安装信息并关闭工单。</p>
-
-      <p>📌 总结：</p>
-      <p>面试回答时，你可以说：</p>
-      <p>👉 “My rack and stack process includes preparation, rail installation, mounting the server, connecting redundant power and network cables, managing airflow with blanking panels, powering on, and finally updating documentation in ServiceNow.”</p>
-    </div>
-    <button onclick="copyContent('sec6')">复制 Copy</button>
-  </details>
-
-  <button onclick="printContent()">打印 Print</button>
+  </div>
 </body>
 </html>
-
